@@ -107,7 +107,17 @@ Open in browser:
 
 http://127.0.0.1:5000/
 
+## 🌐 Website Preview
 
+### Home Page
+![Home Page](screenshots/homepage.png)
+![Home Page](screenshots/home1.png)
+
+### Prediction Result
+![Prediction](screenshots/prediction.png)
+
+### Claim History
+![History](screenshots/history.png)
 ---
 
 ## 📊 Machine Learning Model
