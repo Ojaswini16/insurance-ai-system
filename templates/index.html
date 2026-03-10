@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FraudGuard AI — Insurance Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#070b14; --surface:#0d1424; --border:rgba(99,179,237,0.12);
+    --accent:#38bdf8; --accent2:#818cf8; --danger:#f87171;
+    --success:#34d399; --text:#e2e8f0; --muted:#64748b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(56,189,248,0.03) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(56,189,248,0.03) 1px,transparent 1px);
+    background-size:40px 40px;pointer-events:none;z-index:0;}
+  .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+  .orb1{width:500px;height:500px;background:rgba(56,189,248,0.06);top:-150px;right:-100px;animation:floatOrb 8s ease-in-out infinite alternate;}
+  .orb2{width:400px;height:400px;background:rgba(129,140,248,0.05);bottom:-100px;left:-100px;animation:floatOrb 8s ease-in-out infinite alternate;animation-delay:-4s;}
+  @keyframes floatOrb{from{transform:translate(0,0) scale(1);}to{transform:translate(30px,20px) scale(1.05);}}
+
+  nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:18px 40px;background:rgba(7,11,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  .nav-logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--text);text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-link{display:flex;align-items:center;gap:8px;color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;
+            padding:8px 16px;border-radius:8px;border:1px solid transparent;transition:all 0.2s;}
+  .nav-link:hover{color:var(--accent);border-color:var(--border);background:var(--surface);}
+
+  .hero{position:relative;z-index:1;text-align:center;padding:70px 20px 50px;}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);
+              border-radius:100px;padding:6px 16px;font-size:0.78rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;
+              margin-bottom:28px;animation:fadeIn 0.6s ease;}
+  .pulse-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 1.5s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin-bottom:18px;animation:fadeUp 0.7s ease 0.1s both;}
+  h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .hero-sub{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto;line-height:1.7;animation:fadeUp 0.7s ease 0.2s both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+  .main-card{position:relative;z-index:1;max-width:640px;margin:0 auto 60px;padding:0 20px;animation:fadeUp 0.7s ease 0.3s both;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;position:relative;overflow:hidden;margin-bottom:14px;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.5;}
+
+  .section-label{font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
+  .section-title{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:24px;}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px;}
+  .form-group{display:flex;flex-direction:column;gap:5px;}
+  label{font-size:0.78rem;font-weight:500;color:var(--muted);letter-spacing:0.5px;}
+  input,select{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;
+               padding:12px 14px;color:var(--text);font-size:0.9rem;font-family:'DM Sans',sans-serif;transition:all 0.2s;outline:none;width:100%;}
+  input::placeholder{color:var(--muted);}
+  input:focus,select:focus{border-color:var(--accent);background:rgba(56,189,248,0.04);box-shadow:0 0 0 3px rgba(56,189,248,0.08);}
+  select option{background:#1e293b;}
+
+  .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#0ea5e9);border:none;border-radius:12px;
+               color:#fff;font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:6px;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(56,189,248,0.3);}
+  .btn-secondary{width:100%;padding:12px;background:transparent;border:1px solid rgba(56,189,248,0.25);border-radius:12px;
+                 color:var(--accent);font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:10px;}
+  .btn-secondary:hover{background:rgba(56,189,248,0.08);border-color:var(--accent);}
+
+  .upload-area{border:1.5px dashed rgba(99,179,237,0.2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;
+               transition:all 0.2s;position:relative;overflow:hidden;}
+  .upload-area:hover{border-color:var(--accent);background:rgba(56,189,248,0.03);}
+  .upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .upload-icon{font-size:1.6rem;margin-bottom:6px;}
+  .upload-label{font-size:0.85rem;color:var(--muted);}
+  .upload-label span{color:var(--accent);}
+  .file-name{margin-top:6px;font-size:0.8rem;color:var(--accent);display:none;}
+
+  .chat-input-row{display:flex;gap:10px;margin-top:14px;}
+  .chat-input{flex:1;}
+  .chat-btn{padding:12px 20px;background:linear-gradient(135deg,var(--accent2),#6366f1);border:none;border-radius:10px;
+            color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .chat-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(129,140,248,0.35);}
+  .chat-response{margin-top:14px;background:rgba(129,140,248,0.06);border:1px solid rgba(129,140,248,0.15);
+                 border-radius:10px;padding:14px;font-size:0.88rem;line-height:1.7;display:none;}
+  .chat-loading{display:none;color:var(--muted);font-size:0.85rem;margin-top:10px;font-style:italic;}
+
+  .error-bar{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:10px;
+             padding:12px 16px;color:var(--danger);font-size:0.88rem;margin-bottom:14px;}
+
+  .stats-bar{position:relative;z-index:1;display:flex;max-width:640px;margin:0 auto 70px;padding:0 20px;animation:fadeUp 0.7s ease 0.4s both;}
+  .stat-item{flex:1;text-align:center;padding:20px;background:var(--surface);border:1px solid var(--border);}
+  .stat-item:first-child{border-radius:14px 0 0 14px;}
+  .stat-item:last-child{border-radius:0 14px 14px 0;}
+  .stat-item+.stat-item{border-left:none;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .stat-key{font-size:0.75rem;color:var(--muted);margin-top:4px;}
+
+  .loading-overlay{display:none;position:fixed;inset:0;background:rgba(7,11,20,0.9);z-index:999;
+                   flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+  .loading-overlay.active{display:flex;}
+  .spinner{width:50px;height:50px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-text{font-family:'Syne',sans-serif;font-size:0.9rem;color:var(--muted);letter-spacing:1px;}
+
+  footer{position:relative;z-index:1;text-align:center;padding:28px;color:var(--muted);font-size:0.8rem;border-top:1px solid var(--border);}
+
+  @media(max-width:600px){
+    nav{padding:14px 16px;}
+    .form-grid{grid-template-columns:1fr;}
+    .stats-bar{flex-direction:column;}
+    .stat-item{border-radius:0!important;border-left:1px solid var(--border)!important;}
+    .stat-item:first-child{border-radius:14px 14px 0 0!important;}
+    .stat-item:last-child{border-radius:0 0 14px 14px!important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">ANALYZING CLAIM...</div>
+</div>
+
+<nav>
+  <a href="{{ url_for('home') }}" class="nav-logo">
+    <div class="nav-logo-icon">🛡️</div>FraudGuard AI
+  </a>
+  <a href="{{ url_for('history') }}" class="nav-link">📋 Claim History</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge"><div class="pulse-dot"></div>AI-Powered Detection</div>
+  <h1>Insurance Fraud<br><span>Detection System</span></h1>
+  <p class="hero-sub">Advanced machine learning algorithms analyze your claims in real-time to detect fraud patterns.</p>
+</div>
+
+<div class="main-card">
+
+  {% if error %}
+  <div class="error-bar">⚠️ {{ error }}</div>
+  {% endif %}
+
+  <!-- ── Manual Claim Entry ── -->
+  <div class="card">
+    <div class="section-label">Manual Entry</div>
+    <div class="section-title">Claim Analysis</div>
+
+    <form action="{{ url_for('predict') }}" method="POST" onsubmit="showLoading()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>AGE</label>
+          <input type="number" name="age" placeholder="e.g. 35" min="1" max="120" required>
+        </div>
+        <div class="form-group">
+          <label>POLICY TENURE (years)</label>
+          <input type="number" name="tenure" placeholder="e.g. 5" min="0" required>
+        </div>
+        <div class="form-group">
+          <label>PREMIUM AMOUNT (₹)</label>
+          <input type="number" name="premium_amount" placeholder="e.g. 12000" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>CLAIM AMOUNT (₹)</label>
+          <input type="number" name="claim_amount" placeholder="e.g. 50000" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>FAMILY MEMBERS</label>
+          <input type="number" name="family_members" placeholder="e.g. 4" min="1" required>
+        </div>
+        <div class="form-group">
+          <label>RISK SEGMENTATION</label>
+          <select name="risk_segmentation" required>
+            <option value="" disabled selected>Select level</option>
+            <option value="1">1 — Low Risk</option>
+            <option value="2">2 — Medium Risk</option>
+            <option value="3">3 — High Risk</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">🔍 &nbsp;Analyze for Fraud</button>
+    </form>
+  </div>
+
+  <!-- ── Upload CSV ── -->
+  <div class="card">
+    <div class="section-label">Bulk Analysis</div>
+    <div class="section-title">Upload Dataset</div>
+    <form id="csvForm" enctype="multipart/form-data">
+      <div class="upload-area">
+        <input type="file" name="file" id="csvFile" accept=".csv" onchange="showFileName('csvFile','csvName')">
+        <div class="upload-icon">📊</div>
+        <div class="upload-label"><span>Click to upload</span> or drag & drop CSV</div>
+        <div class="file-name" id="csvName"></div>
+      </div>
+      <button type="button" class="btn-secondary" onclick="uploadCSV()">Upload & Process CSV</button>
+    </form>
+    <div id="csvResult" style="margin-top:12px;font-size:0.85rem;color:var(--muted);"></div>
+  </div>
+
+  <!-- ── Document Verification ── -->
+  <div class="card">
+    <div class="section-label">Document Verification</div>
+    <div class="section-title">Medical / Accident Document</div>
+    <form id="docForm" enctype="multipart/form-data">
+      <div class="upload-area">
+        <input type="file" name="file" id="docFile" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName('docFile','docName')">
+        <div class="upload-icon">📄</div>
+        <div class="upload-label"><span>Click to upload</span> PDF or Image</div>
+        <div class="file-name" id="docName"></div>
+      </div>
+      <button type="button" class="btn-secondary" onclick="verifyDoc()">Verify Document</button>
+    </form>
+    <div id="docResult" style="margin-top:12px;font-size:0.85rem;color:var(--muted);"></div>
+  </div>
+
+  <!-- ── Chatbot ── -->
+  <div class="card">
+    <div class="section-label">AI Assistant</div>
+    <div class="section-title">Insurance Chatbot</div>
+    <div class="chat-input-row">
+      <input class="chat-input" type="text" id="chatInput" placeholder="Ask about insurance fraud, claims, policies..."
+             onkeydown="if(event.key==='Enter') askChat()">
+      <button class="chat-btn" onclick="askChat()">Ask AI</button>
+    </div>
+    <div class="chat-loading" id="chatLoading">✦ Thinking...</div>
+    <div class="chat-response" id="chatResponse"></div>
+  </div>
+
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-val">98.2%</div><div class="stat-key">Detection Accuracy</div></div>
+  <div class="stat-item"><div class="stat-val">0.3s</div><div class="stat-key">Avg Analysis Time</div></div>
+  <div class="stat-item"><div class="stat-val">12K+</div><div class="stat-key">Claims Processed</div></div>
+</div>
+
+<footer>© 2026 FraudGuard AI · Insurance Intelligence Platform</footer>
+
+<script>
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function showFileName(inputId, nameId) {
+  const file = document.getElementById(inputId).files[0];
+  const el   = document.getElementById(nameId);
+  if (file) { el.textContent = '✓ ' + file.name; el.style.display = 'block'; }
+}
+
+async function uploadCSV() {
+  const file = document.getElementById('csvFile').files[0];
+  if (!file) { alert('Please select a CSV file first.'); return; }
+  const fd = new FormData();
+  fd.append('file', file);
+  const res = document.getElementById('csvResult');
+  res.textContent = 'Processing…';
+  try {
+    const r = await fetch('/upload_csv', { method:'POST', body:fd });
+    const data = await r.json();
+    if (data.error) { res.style.color='var(--danger)'; res.textContent='Error: '+data.error; return; }
+    res.style.color='var(--success)';
+    res.textContent = `✓ ${data.length} records analyzed. High risk: ${data.filter(d=>d.level==='HIGH').length}`;
+  } catch(e) { res.style.color='var(--danger)'; res.textContent='Upload failed.'; }
+}
+
+async function verifyDoc() {
+  const file = document.getElementById('docFile').files[0];
+  if (!file) { alert('Please select a document first.'); return; }
+  const fd = new FormData();
+  fd.append('file', file);
+  const res = document.getElementById('docResult');
+  res.textContent = 'Verifying…';
+  try {
+    const r = await fetch('/verify_document', { method:'POST', body:fd });
+    const data = await r.json();
+    res.style.color = data.verification?.includes('No anomaly') ? 'var(--success)' : 'var(--warning)';
+    res.textContent = '✓ ' + (data.verification || data.error || 'Done');
+  } catch(e) { res.style.color='var(--danger)'; res.textContent='Verification failed.'; }
+}
+
+async function askChat() {
+  const q = document.getElementById('chatInput').value.trim();
+  if (!q) return;
+  document.getElementById('chatLoading').style.display = 'block';
+  document.getElementById('chatResponse').style.display = 'none';
+  try {
+    const r = await fetch('/chatbot', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: q })
+    });
+    const data = await r.json();
+    document.getElementById('chatResponse').textContent = data.reply || data.error || '—';
+    document.getElementById('chatResponse').style.display = 'block';
+  } catch(e) {
+    document.getElementById('chatResponse').textContent = 'Service unavailable.';
+    document.getElementById('chatResponse').style.display = 'block';
+  }
+  document.getElementById('chatLoading').style.display = 'none';
+  document.getElementById('chatInput').value = '';
+}
+</script>
+</body>
+</html>

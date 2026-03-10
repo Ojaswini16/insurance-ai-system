@@ -1,0 +1,11 @@
+flask
+pandas
+numpy
+scikit-learn
+joblib
+shap
+google-generativeai
+opencv-python
+pytesseract
+SpeechRecognition
+networkx

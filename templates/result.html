@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FraudGuard AI — Analysis Result</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070b14;--surface:#0d1424;--border:rgba(99,179,237,0.12);
+    --accent:#38bdf8;--accent2:#818cf8;--danger:#f87171;
+    --warning:#fbbf24;--success:#34d399;--text:#e2e8f0;--muted:#64748b;
+    {% if level == 'HIGH' %}--lvl-color:#f87171;{% elif level == 'MEDIUM' %}--lvl-color:#fbbf24;{% else %}--lvl-color:#34d399;{% endif %}
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(56,189,248,0.03) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(56,189,248,0.03) 1px,transparent 1px);
+    background-size:40px 40px;pointer-events:none;z-index:0;}
+  .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;}
+  .orb1{width:600px;height:600px;
+    {% if level=='HIGH' %}background:rgba(248,113,113,0.07);{% elif level=='MEDIUM' %}background:rgba(251,191,36,0.06);{% else %}background:rgba(52,211,153,0.06);{% endif %}
+    top:-200px;right:-200px;}
+  .orb2{width:500px;height:500px;background:rgba(56,189,248,0.04);bottom:-100px;left:-150px;}
+
+  nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:18px 40px;background:rgba(7,11,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  .nav-logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--text);text-decoration:none;}
+  .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nav-actions{display:flex;gap:10px;}
+  .nav-link{display:flex;align-items:center;gap:8px;color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;
+            padding:8px 16px;border-radius:8px;border:1px solid transparent;transition:all 0.2s;}
+  .nav-link:hover{color:var(--accent);border-color:var(--border);background:var(--surface);}
+
+  .page{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:50px 20px 80px;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ── Verdict ── */
+  .verdict-hero{text-align:center;margin-bottom:32px;animation:fadeUp 0.6s ease both;}
+  .verdict-icon{width:80px;height:80px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;
+                background:rgba(var(--lvl-color-rgb,56,189,248),0.1);border:2px solid rgba(var(--lvl-color-rgb,56,189,248),0.3);
+                box-shadow:0 0 40px rgba(var(--lvl-color-rgb,56,189,248),0.2);}
+
+  {% if level=='HIGH' %}
+  .verdict-icon{background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);box-shadow:0 0 40px rgba(248,113,113,0.2);}
+  {% elif level=='MEDIUM' %}
+  .verdict-icon{background:rgba(251,191,36,0.12);border:2px solid rgba(251,191,36,0.3);box-shadow:0 0 40px rgba(251,191,36,0.2);}
+  {% else %}
+  .verdict-icon{background:rgba(52,211,153,0.12);border:2px solid rgba(52,211,153,0.3);box-shadow:0 0 40px rgba(52,211,153,0.2);}
+  {% endif %}
+
+  .verdict-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:8px;}
+  .verdict-sub{color:var(--muted);font-size:0.95rem;}
+
+  /* ── Score Card ── */
+  .score-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:14px;
+              position:relative;overflow:hidden;animation:fadeUp 0.6s ease 0.1s both;}
+  .score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    {% if level=='HIGH' %}background:linear-gradient(90deg,transparent,var(--danger),transparent);
+    {% elif level=='MEDIUM' %}background:linear-gradient(90deg,transparent,var(--warning),transparent);
+    {% else %}background:linear-gradient(90deg,transparent,var(--success),transparent);{% endif %}}
+
+  .score-label{color:var(--muted);font-size:0.82rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+  .score-value{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;line-height:1;color:var(--lvl-color);}
+  .risk-badge{display:inline-flex;align-items:center;padding:5px 13px;border-radius:100px;
+              font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:1px;margin-top:10px;
+    {% if level=='HIGH' %}background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:var(--danger);
+    {% elif level=='MEDIUM' %}background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:var(--warning);
+    {% else %}background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--success);{% endif %}}
+  .decision-text{margin-top:12px;font-size:0.9rem;font-weight:600;color:var(--text);}
+
+  /* ── Gauge ── */
+  .gauge-wrap{position:relative;width:200px;height:115px;flex-shrink:0;}
+  .gauge-wrap svg{overflow:visible;}
+  .gauge-number{position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+                font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--lvl-color);text-align:center;}
+
+  /* ── Details Grid ── */
+  .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;animation:fadeUp 0.6s ease 0.2s both;}
+  .detail-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;}
+  .detail-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+  .detail-value{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;}
+
+  /* ── Feature Importance ── */
+  .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;
+                margin-bottom:14px;animation:fadeUp 0.6s ease 0.3s both;}
+  .card-title{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:20px;}
+  .feature-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .feature-name{font-size:0.78rem;color:var(--muted);width:130px;flex-shrink:0;}
+  .feature-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden;}
+  .feature-bar{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1s ease;}
+  .feature-pct{font-size:0.78rem;color:var(--text);width:40px;text-align:right;}
+
+  /* ── Plan Card ── */
+  .plan-card{background:linear-gradient(135deg,rgba(56,189,248,0.06),rgba(129,140,248,0.06));
+             border:1px solid rgba(129,140,248,0.2);border-radius:20px;padding:26px;
+             margin-bottom:22px;animation:fadeUp 0.6s ease 0.4s both;}
+  .plan-icon{font-size:1.8rem;margin-bottom:8px;}
+  .plan-label{font-size:0.72rem;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .plan-name{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;}
+
+  /* ── Actions ── */
+  .actions{display:flex;gap:12px;animation:fadeUp 0.6s ease 0.5s both;}
+  .btn-primary{flex:1;padding:14px;background:linear-gradient(135deg,var(--accent),#0ea5e9);border:none;border-radius:12px;
+               color:#fff;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;
+               cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;transition:all 0.25s;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(56,189,248,0.3);}
+  .btn-outline{flex:1;padding:14px;background:transparent;border:1px solid rgba(56,189,248,0.25);border-radius:12px;
+               color:var(--accent);font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;
+               cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+  .btn-outline:hover{background:rgba(56,189,248,0.08);border-color:var(--accent);}
+
+  footer{position:relative;z-index:1;text-align:center;padding:28px;color:var(--muted);font-size:0.8rem;border-top:1px solid var(--border);}
+  @media(max-width:600px){nav{padding:14px 16px;}.details-grid{grid-template-columns:1fr;}.actions{flex-direction:column;}.gauge-wrap{margin:16px auto 0;}}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <a href="{{ url_for('home') }}" class="nav-logo">
+    <div class="nav-logo-icon">🛡️</div>FraudGuard AI
+  </a>
+  <div class="nav-actions">
+    <a href="{{ url_for('history') }}" class="nav-link">📋 History</a>
+    <a href="{{ url_for('home') }}" class="nav-link">← New Claim</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Verdict -->
+  <div class="verdict-hero">
+    <div class="verdict-icon">
+      {% if level == 'HIGH' %}🚨{% elif level == 'MEDIUM' %}⚠️{% else %}✅{% endif %}
+    </div>
+    <div class="verdict-title">
+      {% if level == 'HIGH' %}Fraud Risk Detected
+      {% elif level == 'MEDIUM' %}Moderate Risk Found
+      {% else %}Low Risk — Claim Clear{% endif %}
+    </div>
+    <div class="verdict-sub">
+      {% if level == 'HIGH' %}This claim shows significant fraud indicators
+      {% elif level == 'MEDIUM' %}This claim requires further review
+      {% else %}This claim appears legitimate{% endif %}
+    </div>
+  </div>
+
+  <!-- Score Card -->
+  <div class="score-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+      <div>
+        <div class="score-label">Fraud Risk Score</div>
+        <div class="score-value">{{ score }}%</div>
+        <div><span class="risk-badge">{{ level }} RISK</span></div>
+        <div class="decision-text">⟶ Decision: {{ decision }}</div>
+      </div>
+
+      <!-- SVG Gauge -->
+      <div class="gauge-wrap">
+        <svg width="200" height="110" viewBox="0 0 200 110">
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12" stroke-linecap="round"/>
+          <path id="gaugeFill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)"
+                stroke-width="12" stroke-linecap="round"
+                stroke-dasharray="251" stroke-dashoffset="251"
+                data-score="{{ score }}"/>
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#34d399"/>
+              <stop offset="50%" stop-color="#fbbf24"/>
+              <stop offset="100%" stop-color="#f87171"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="gauge-number">{{ score }}%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Details -->
+  <div class="details-grid">
+    <div class="detail-card">
+      <div class="detail-label">Age</div>
+      <div class="detail-value">{{ age }} years</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">Policy Tenure</div>
+      <div class="detail-value">{{ tenure }} year(s)</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">Premium Amount</div>
+      <div class="detail-value">₹{{ "{:,.0f}".format(premium) }}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">Claim Amount</div>
+      <div class="detail-value">₹{{ "{:,.0f}".format(claim_amount) }}</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">Family Members</div>
+      <div class="detail-value">{{ family }} member(s)</div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-label">Risk Segmentation</div>
+      <div class="detail-value">
+        {% if risk == 1 %}1 — Low{% elif risk == 2 %}2 — Medium{% else %}3 — High{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Importance -->
+  <div class="feature-card">
+    <div class="card-title">📊 Feature Importance</div>
+    {% if explanation %}
+      {% set ns = namespace(max_val=0.0001) %}
+      {% for feature, value in explanation.items() %}
+        {% if value > ns.max_val %}{% set ns.max_val = value %}{% endif %}
+      {% endfor %}
+
+      {% for feature, value in explanation.items() %}
+      <div class="feature-row">
+        <div class="feature-name">{{ feature.replace('_',' ') }}</div>
+        <div class="feature-bar-wrap">
+          <div class="feature-bar" style="width:{{ ((value / ns.max_val) * 100) | round(1) }}%"></div>
+        </div>
+        <div class="feature-pct">{{ (value * 100) | round(3) }}%</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="color:var(--muted);font-size:0.85rem;">No feature importance data available.</div>
+    {% endif %}
+  </div>
+
+  <!-- Recommended Plan -->
+  <div class="plan-card">
+    <div class="plan-icon">💡</div>
+    <div class="plan-label">Recommended Insurance Plan</div>
+    <div class="plan-name">{{ recommendation }}</div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <a href="{{ url_for('home') }}" class="btn-primary">🔍 &nbsp;Check Another Claim</a>
+    <a href="{{ url_for('history') }}" class="btn-outline">📋 &nbsp;View History</a>
+  </div>
+
+</div>
+
+<footer>© 2026 FraudGuard AI · Insurance Intelligence Platform</footer>
+
+<script>
+  // Animate gauge on load
+  window.addEventListener('load', () => {
+    const fill  = document.getElementById('gaugeFill');
+    const score = parseFloat(fill.dataset.score) || 0;
+    setTimeout(() => {
+      fill.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)';
+      fill.style.strokeDashoffset = 251 - (251 * score / 100);
+    }, 300);
+  });
+</script>
+</body>
+</html>
