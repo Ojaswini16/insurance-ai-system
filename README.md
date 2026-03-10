@@ -38,8 +38,8 @@ An AI-powered web application that detects fraudulent insurance claims and provi
 
 ## 📂 Project Structure
 
-
-insurance_ai_system
+```
+insurance-ai-system/
 │
 ├── app.py
 ├── config.py
@@ -47,29 +47,28 @@ insurance_ai_system
 ├── requirements.txt
 │
 ├── dataset/
-│ └── insurance_data.csv
+│   └── insurance_data.csv
 │
 ├── model/
-│ ├── train_model.py
-│ └── fraud_model.pkl
+│   ├── train_model.py
+│   └── fraud_model.pkl
 │
 ├── services/
-│ ├── chatbot_service.py
-│ ├── document_verifier.py
-│ ├── eligibility_service.py
-│ ├── explain_service.py
-│ ├── insurance_recommender.py
-│ └── prediction_service.py
+│   ├── chatbot_service.py
+│   ├── document_verifier.py
+│   ├── eligibility_service.py
+│   ├── explain_service.py
+│   ├── insurance_recommender.py
+│   └── prediction_service.py
 │
 ├── templates/
-│ ├── index.html
-│ ├── result.html
-│ └── history.html
+│   ├── index.html
+│   ├── result.html
+│   └── history.html
 │
 └── utils/
-└── voice_input.py
-
-
+    └── voice_input.py
+```
 ---
 
 ## ⚙️ Installation
